@@ -12,6 +12,8 @@ RUN go mod download
 # Copy the go source
 COPY main.go main.go
 COPY api/ api/
+
+#  Added by me : helper package to create objects based on manifests 
 COPY helpers/ helpers/
 
 COPY controllers/ controllers/
@@ -24,7 +26,7 @@ RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 GO111MODULE=on go build -a -o manager 
 FROM gcr.io/distroless/static:nonroot
 WORKDIR /
 COPY --from=builder /workspace/manager .
-# Copy manifests used by the application
+# Added by me : Copy manifests used by the application
 COPY manifests /usr/local/bin/manifests/
 USER nonroot:nonroot
 
