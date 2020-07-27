@@ -1,0 +1,24 @@
+# permissions for end users to edit cibuilds.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: cibuild-editor-role
+rules:
+- apiGroups:
+  - cicd.cicd.com
+  resources:
+  - cibuilds
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - cicd.cicd.com
+  resources:
+  - cibuilds/status
+  verbs:
+  - get

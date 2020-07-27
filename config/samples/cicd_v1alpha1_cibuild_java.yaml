@@ -1,0 +1,9 @@
+apiVersion: cicd.cicd.com/v1alpha1
+kind: CIBuild
+metadata:
+  name: build-java
+spec:
+  SCMRepoURL: "git@github.com:victorpaulo/microservices.git"
+  imageDestination: "kind-registry:5000/microservices-app3:1.0"
+  SCMSecret: "git-creds"
+  subContext: "app3"

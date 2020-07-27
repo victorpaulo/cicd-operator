@@ -1,0 +1,10 @@
+domain: cicd.com
+layout: go.kubebuilder.io/v2
+repo: github.com/victorpaulo/cicd-operator
+resources:
+- group: cicd
+  kind: CIBuild
+  version: v1alpha1
+version: 3-alpha
+plugins:
+  go.operator-sdk.io/v2-alpha: {}

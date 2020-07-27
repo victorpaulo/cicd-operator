@@ -1,0 +1,65 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: "{{ .JobName }}"
+  namespace: "{{ .ApplicationNamespace }}"
+  labels:
+    app: builder
+spec:
+  backoffLimit: 1
+  completions: 1
+  parallelism: 1
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+      - name: build
+        image: gcr.io/kaniko-project/executor:latest
+        # args: ["-c", "/workspace/build/", "{{if .SubContext }}--dockerfile=/workspace/build/{{.SubContext}}/Dockerfile{{end}}", "--insecure", "-d", "{{ .ImageDestination }}", "--verbosity=debug", "--cache=false"]
+        args: ["-c", "/workspace/build/", "--insecure", "-d", "{{ .ImageDestination }}", "--verbosity=debug", "--cache=false"]
+        volumeMounts:
+        - name: build-context
+          mountPath: /workspace
+      initContainers:
+      - name: git-sync
+        image: k8s.gcr.io/git-sync:v3.1.6
+        imagePullPolicy: Always
+        volumeMounts:
+        - name: build-context
+          mountPath: /workspace
+        - name: git-secret
+          mountPath: /etc/git-secret
+        env:
+        - name: GIT_SYNC_REPO
+          value: "{{ .SCMRepoURL }}"
+        - name: GIT_SYNC_BRANCH
+          value: "{{ .SCMBranch }}" 
+        - name: GIT_SYNC_ROOT
+          value: /workspace
+        - name: GIT_SYNC_DEST
+          value: tmp
+        - name: GIT_SYNC_PERMISSIONS
+          value: "0777"
+        - name: GIT_SYNC_ONE_TIME
+          value: "true"
+        - name: GIT_SYNC_SSH
+          value: "true"
+        - name: GIT_KNOWN_HOSTS
+          value: "true"
+        securityContext:
+          runAsUser: 0
+      - name: workaround
+        image: alpine
+        command: ["/bin/sh","-c"]
+        args: ["mkdir -p /workspace/build; cp -L -R {{if .SubContext }}/workspace/tmp/{{.SubContext}}/*{{else}}/workspace/tmp/*{{end}} /workspace/build; rm -rf /workspace/tmp; rm -rf /workspace/rev*"]
+        volumeMounts:
+        - name: build-context
+          mountPath: /workspace
+      volumes:
+      - name: build-context
+        emptyDir: {}
+      - name: git-secret
+        secret:
+          defaultMode: 256
+          secretName: "{{ .SCMSecret }}"
+      
