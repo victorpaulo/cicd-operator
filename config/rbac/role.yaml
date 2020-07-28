@@ -33,6 +33,26 @@ rules:
 - apiGroups:
   - cicd.cicd.com
   resources:
+  - cdeploys
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - cicd.cicd.com
+  resources:
+  - cdeploys/status
+  verbs:
+  - get
+  - patch
+  - update
+- apiGroups:
+  - cicd.cicd.com
+  resources:
   - cibuildren
   verbs:
   - create
