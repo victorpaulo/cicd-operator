@@ -61,10 +61,10 @@ func (r *CDeployReconciler) Reconcile(req ctrl.Request) (ctrl.Result, error) {
 	if job != nil {
 		if len(job.Status.Conditions) > 0 && (job.Status.Conditions[0].Type == batchv1.JobComplete) {
 
-			log.Info(fmt.Sprintf("[CIDEPLOY] - Job found [%v]", job))
+			// log.Info(fmt.Sprintf("[CIDEPLOY] - Job found [%v]", job))
 			ciBuild := DeploymentMap[job.Name]
 			if ciBuild != nil {
-				log.Info(fmt.Sprintf("[CIBUILD] - found [%v]", ciBuild))
+				// log.Info(fmt.Sprintf("[CIBUILD] - found [%v]", ciBuild))
 
 				err = r.createDeploymentFromTemplate(ciBuild)
 

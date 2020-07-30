@@ -67,6 +67,14 @@ func main() {
 		os.Exit(1)
 	}
 
+	if os.Getenv("ENABLE_WEBHOOKS") != "false" {
+		setupLog.Info("Defining Webhook ...")
+		if err = (&cicdv1alpha1.CIBuild{}).SetupWebhookWithManager(mgr); err != nil {
+			setupLog.Error(err, "unable to create webhook", "webhook", "CIBuild")
+			os.Exit(1)
+		}
+	}
+
 	if err = (&controllers.CIBuildReconciler{
 		Client: mgr.GetClient(),
 		Log:    ctrl.Log.WithName("controllers").WithName("CIBuild"),
@@ -82,6 +90,10 @@ func main() {
 		Scheme: mgr.GetScheme(),
 	}).SetupWithManager(mgr); err != nil {
 		setupLog.Error(err, "unable to create controller", "controller", "CDeploy")
+		os.Exit(1)
+	}
+	if err = (&cicdv1alpha1.CIBuild{}).SetupWebhookWithManager(mgr); err != nil {
+		setupLog.Error(err, "unable to create webhook", "webhook", "CIBuild")
 		os.Exit(1)
 	}
 	// +kubebuilder:scaffold:builder

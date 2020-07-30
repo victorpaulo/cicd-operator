@@ -29,5 +29,7 @@ COPY --from=builder /workspace/manager .
 # Added by me : Copy manifests used by the application
 COPY manifests /usr/local/bin/manifests/
 USER nonroot:nonroot
+#  Added by me : for Webhook
+ENV ENABLE_WEBHOOKS=true
 
 ENTRYPOINT ["/manager"]
