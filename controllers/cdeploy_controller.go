@@ -20,7 +20,6 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/cloudflare/cfssl/log"
 	"github.com/go-logr/logr"
 	"github.com/victorpaulo/cicd-operator/api/v1alpha1"
 	"github.com/victorpaulo/cicd-operator/helpers"
@@ -49,12 +48,20 @@ type CDeployReconciler struct {
 //Reconcile reconciles loop
 func (r *CDeployReconciler) Reconcile(req ctrl.Request) (ctrl.Result, error) {
 	_ = context.Background()
-	_ = r.Log.WithValues("cdeploy", req.NamespacedName)
+	log := r.Log.WithValues("cdeploy", req.NamespacedName)
 
 	job := &batchv1.Job{}
 	err := r.Client.Get(context.TODO(), types.NamespacedName{Name: req.Name, Namespace: req.Namespace}, job)
 
 	if err != nil {
+		if errors.IsNotFound(err) {
+			// Request object not found, could have been deleted after reconcile request.
+			// Owned objects are automatically garbage collected. For additional cleanup logic use finalizers.
+			// Return and don't requeue
+			log.Info("job object not found, finishing the reconciliation")
+			return ctrl.Result{}, nil
+		}
+		log.Info("error reading the object - requeue the request.")
 		return ctrl.Result{}, err
 	}
 
@@ -66,7 +73,7 @@ func (r *CDeployReconciler) Reconcile(req ctrl.Request) (ctrl.Result, error) {
 			if ciBuild != nil {
 				// log.Info(fmt.Sprintf("[CIBUILD] - found [%v]", ciBuild))
 
-				err = r.createDeploymentFromTemplate(ciBuild)
+				err = r.createDeploymentFromTemplate(log, ciBuild)
 
 				if err != nil {
 					log.Error(err, "An unexpected error happening creating the Deployment")
@@ -81,7 +88,7 @@ func (r *CDeployReconciler) Reconcile(req ctrl.Request) (ctrl.Result, error) {
 	return ctrl.Result{}, nil
 }
 
-func (r *CDeployReconciler) createDeploymentFromTemplate(cr *v1alpha1.CIBuild) error {
+func (r *CDeployReconciler) createDeploymentFromTemplate(log logr.Logger, cr *v1alpha1.CIBuild) error {
 	operatorHelper := helpers.NewTemplateHelper(helpers.OperatorParameters{
 		ApplicationNamespace: cr.Namespace,
 		JobName:              cr.Name,
@@ -115,6 +122,7 @@ func (r *CDeployReconciler) createDeploymentFromTemplate(cr *v1alpha1.CIBuild) e
 	return err
 }
 
+//SetupWithManager sets up the manager
 func (r *CDeployReconciler) SetupWithManager(mgr ctrl.Manager) error {
 	return ctrl.NewControllerManagedBy(mgr).
 		For(&batchv1.Job{}).

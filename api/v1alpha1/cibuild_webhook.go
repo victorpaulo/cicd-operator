@@ -26,6 +26,7 @@ import (
 // log is for logging in this package.
 var cibuildlog = logf.Log.WithName("cibuild-resource")
 
+//SetupWebhookWithManager sets the webhook
 func (r *CIBuild) SetupWebhookWithManager(mgr ctrl.Manager) error {
 	return ctrl.NewWebhookManagedBy(mgr).
 		For(r).
@@ -46,7 +47,7 @@ func (r *CIBuild) Default() {
 }
 
 // TODO(user): change verbs to "verbs=create;update;delete" if you want to enable deletion validation.
-// +kubebuilder:webhook:verbs=create;update,path=/validate-cicd-cicd-com-v1alpha1-cibuild,mutating=false,failurePolicy=fail,groups=cicd.cicd.com,resources=cibuilds,versions=v1alpha1,name=vcibuild.kb.io
+// +kubebuilder:webhook:verbs=create;update;delete,path=/validate-cicd-cicd-com-v1alpha1-cibuild,mutating=false,failurePolicy=fail,groups=cicd.cicd.com,resources=cibuilds,versions=v1alpha1,name=vcibuild.kb.io
 
 var _ webhook.Validator = &CIBuild{}
 
