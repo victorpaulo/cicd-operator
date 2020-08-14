@@ -3,7 +3,7 @@ kind: CIBuild
 metadata:
   name: build-ace
 spec:
-  SCMRepoURL: "git@bitbucket.org:victorpalmeida/ibm-ace-lab.git"
+  SCMRepoURL: "git@github.com:victorpaulo/ibm-ace-lab.git"
   imageDestination: "kind-registry:5000/ace-test:1.0"
   SCMBranch: "dev"
   SCMSecret: "git-creds"
