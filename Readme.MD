@@ -1,5 +1,5 @@
 
-#Sample CI/CD Operator
+# Sample CI/CD Operator
 This operator was created using Operator-SDK version 1.0.
 
 ## Creating the Operator
