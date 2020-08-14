@@ -212,7 +212,7 @@ func (r *CIBuildReconciler) deleteJob(log logr.Logger, cr *cicdv1alpha1.CIBuild)
 		//TO-DO: Remove orphan pods after job deletion
 		// background := metav1.DeletePropagationBackground
 		// deleteOptions := metav1.DeleteOptions{PropagationPolicy: &background}
-		// deleteOptions.
+
 		r.Client.Delete(context.TODO(), job)
 	}
 	return nil
