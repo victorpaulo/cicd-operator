@@ -2,6 +2,9 @@
 # Sample CI/CD Operator
 This operator was created using Operator-SDK version 1.0.
 
+## Creating your K8s Cluster using KinD
+Run the following [bash script](https://gist.github.com/victorpaulo/257c5778ebc0bf92fcd9ac5c75f84d4a) in your environment;
+
 ## Creating the Operator
 #### create the directory of your project
 ```
@@ -46,3 +49,9 @@ $ kubectl create secret generic git-creds --from-file=ssh=mykey --from-file=know
 `$ kubectl apply -f config/samples/cicd_v1alpha1_cibuild_nodejs.yaml`
 ### this CR points to a Java application
 `$ kubectl apply -f config/samples/cicd_v1alpha1_cibuild_java.yaml`
+
+## Installing Cert Manager in your cluster (Required by the Webhook)
+
+```
+$ kubectl apply - validate=false -f https://github.com/jetstack/cert-manager/releases/download/v0.16.0/cert-manager.yaml
+```
