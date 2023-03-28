@@ -1,5 +1,5 @@
 
-# Sample CI/CD Operator
+# Sample CI/CD Operator - [Medium article](https://medium.com/@victorpaulo/from-zero-to-kubernetes-operator-dd06436b9d89)
 This operator was created using Operator-SDK version 1.0.
 
 ## Creating your K8s Cluster using KinD
